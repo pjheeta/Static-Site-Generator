@@ -1,4 +1,5 @@
 from enum import Enum
+from htmlnode import LeafNode
 
 #My TextType Enums
 class TextType(Enum):
@@ -24,3 +25,18 @@ class TextNode():
         return (f"TextNode({self.text}, {self.text_type.value}, {self.url})")
 
 
+def text_node_to_html_node(text_node):
+    if text_node.text_type is TextType.TEXT:
+        return LeafNode(None, text_node.text,None)
+    elif text_node.text_type is TextType.BOLD:
+        return LeafNode("b", text_node.text,None)
+    elif text_node.text_type is TextType.ITALIC:
+        return LeafNode("i",text_node.text,None)
+    elif text_node.text_type is TextType.CODE:
+        return LeafNode("code",text_node.text,None)
+    elif text_node.text_type is TextType.LINK:
+        return LeafNode('a',text_node.text, {"href":text_node.url})
+    elif text_node.text_type is TextType.IMAGE:
+        return LeafNode("img","",{"src": text_node.url, "alt": text_node.text})
+    else:
+        raise Exception
