@@ -1,6 +1,7 @@
 import unittest
 from textnode import TextNode, TextType, text_node_to_html_node
 from inline import split_nodes_delimiter
+from regex import extract_markdown_images,extract_markdown_links
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -64,6 +65,36 @@ class TestTextNode(unittest.TestCase):
         new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
         self.assertNotEqual(new_nodes[1].text_type, TextType.CODE)
 
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_many_images(self):
+        matches = extract_markdown_images(
+            "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        )
+        self.assertListEqual([("rick roll", "https://i.imgur.com/aKaOqIh.gif"),("obi wan","https://i.imgur.com/fJRm4Vk.jpeg")], matches)        
+    
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_images(
+            "This is text with a link [to boot dev](https://www.boot.dev)"
+        )
+        self.assertListEqual([("to boot dev", "https://www.boot.dev")], matches)
+
+    def test_extract_markdown_many_links(self):
+        matches = extract_markdown_images(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [pornhub](https://www.pornhub.com))"
+        )
+        self.assertListEqual([("to boot dev", "https://www.boot.dev"),("pornhub","https://www.pornhub.com")], matches)
+
+    def test_extract_markdown_not_many_links(self):
+        matches = extract_markdown_images(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [pornhub](https://www.pornhub.com))"
+        )
+        self.assertNotEqual([("to boot dev", "https://www.boot.dev"),("chamster","https://www.pornhub.com")], matches)
+        #there is no assertListNotEqual, so we just used assertNotEqual
 
 if __name__ == "__main__":
     unittest.main()
