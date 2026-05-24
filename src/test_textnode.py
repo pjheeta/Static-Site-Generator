@@ -2,7 +2,8 @@ import unittest
 from textnode import TextNode, TextType, text_node_to_html_node
 from inline import split_nodes_delimiter
 from regex import extract_markdown_images,extract_markdown_links, split_nodes_image,split_nodes_link
-from blocks import markdown_to_blocks
+from blocks import BlockType, markdown_to_blocks, block_to_block_type
+import re
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -152,6 +153,15 @@ This is the same paragraph on a new line
                 "- This is a list\n- with items",
             ],
         )
+    
+    def test_block_to_block_type(self):
+        md = md = """```
+print("Hello World")
+```"""
+        blocks = block_to_block_type(md)
+        print(repr(md))
+        print(re.match(r"^```[\r\n](.*?)```$", md, re.DOTALL))
+        self.assertEqual(blocks, BlockType.CODE)
 
 if __name__ == "__main__":
     unittest.main()
