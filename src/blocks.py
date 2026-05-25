@@ -1,4 +1,9 @@
 from enum import Enum
+from textnode import TextNode, TextType, text_node_to_html_node
+from htmlnode import HtmlNode, ParentNode
+from inline import split_nodes_delimiter
+from regex import extract_markdown_images,extract_markdown_links, split_nodes_image,split_nodes_link, text_to_textnodes
+# from htmlnode import props_to_html
 import unittest
 import re
 
@@ -35,9 +40,7 @@ def block_to_block_type(blockNode: enumerate):
     elif isOrdered:
         return BlockType.OLIST
     else:
-        return BlockType.PARAGRAPH
-
-    
+        return BlockType.PARAGRAPH  
 
 def markdown_to_blocks(markdown):
     block = []
@@ -48,3 +51,36 @@ def markdown_to_blocks(markdown):
             block.append (temp) 
     return block
 
+def markdown_to_html_node(markdown):
+    blockNode = []
+    newNode = markdown_to_blocks(markdown)
+
+    for nodes in newNode:
+        childNode = text_to_children(nodes)
+        blockType =block_to_block_type(nodes)
+  
+        if blockType == BlockType.PARAGRAPH:
+            blockNode.append(ParentNode("p", childNode))
+            
+    return ParentNode("div", blockNode)
+
+
+def text_to_children(text):
+    childrenNode = []
+    textNode = text_to_textnodes(text)
+    for singleNode in textNode:
+        htmlNode = text_node_to_html_node(singleNode)
+        childrenNode.append(htmlNode)
+
+    return childrenNode
+
+
+md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+
+"""
+markdown_to_html_node(md)
