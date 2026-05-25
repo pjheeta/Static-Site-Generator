@@ -19,11 +19,19 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(markdown)
     template = template.replace("{{ Title }}",title)
     template = template.replace("{{ Content }}",markHtml)
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     open(dest_path, "w").write(template)
-    #print(template)
 
 
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    print (f'Generating page froms "{dir_path_content}" to "{dest_dir_path}" using "{template_path}"')
+    dirContents = os.listdir(dir_path_content)
+    print (dirContents)
+    for item in dirContents:
+        if os.path.isfile(os.path.join(dir_path_content,item)) is True:
+            convertItem = item.replace(".md",".html")
+            generate_page(os.path.join(dir_path_content,item),template_path,os.path.join(dest_dir_path,convertItem))
+        else:
+            generate_pages_recursive(os.path.join(dir_path_content,item),template_path,os.path.join(dest_dir_path,item))
 
 
-
-#print(extract_title(open("content/index.md").read()))
