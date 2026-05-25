@@ -61,7 +61,18 @@ def markdown_to_html_node(markdown):
   
         if blockType == BlockType.PARAGRAPH:
             blockNode.append(ParentNode("p", childNode))
-            
+        elif blockType == BlockType.CODE:
+            blockNode.append(ParentNode("pre",[ParentNode("code", childNode)]))
+        elif blockType == BlockType.QUOTE:
+            blockNode.append(ParentNode("blockquote", childNode))
+        elif blockType == BlockType.ULIST:
+            blockNode.append(ParentNode("ul", childNode))
+        elif blockType == BlockType.OLIST:
+            blockNode.append(ParentNode("ol", childNode))
+        else:
+            level = len(nodes) - len(nodes.lstrip("#"))
+            blockNode.append(ParentNode(f"h{level}", childNode))            
+
     return ParentNode("div", blockNode)
 
 
